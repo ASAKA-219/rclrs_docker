@@ -1,0 +1,8 @@
+[package]
+name = "rclrs_practice"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rclrs = "*"
+std_msgs = "*"

@@ -1,0 +1,66 @@
+services:
+  humble-rust:
+    container_name: humble-rust
+    image: humble-rust:cpu
+    privileged: true
+    build:
+      context: .
+      args:
+        - USER_NAME=${USER_NAME}
+        - GROUP_NAME=${GROUP_NAME}
+        - UID=${UID}
+        - GID=${GID}
+    environment:
+      - DISPLAY=${DISPLAY}
+      - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
+      #- PULSE_SERVER=unix:/tmp/pulseaudio.socket
+      #- PULSE_COOKIE=/tmp/pulseaudio.cookie
+    volumes:
+       - /tmp/.X11-unix:/tmp/.X11-unix
+       - $HOME/.Xauthority/:/root/.Xauthority
+       - /dev:/dev
+       - ./rclrs_practice:/home/${USER_NAME}/catkin_ws/rclrs_practice
+    devices:
+       - /dev:/dev
+    ipc: host
+    network_mode: host
+    tty: true
+    stdin_open: true
+    user: "${UID}:${GID}"
+    command: /bin/bash
+
+  humble-rust-gpu:
+    container_name: humble-rust-gpu
+    image: humble-rust:gpu
+    privileged: true
+    build:
+      context: .
+      args:
+        - USER_NAME=${USER_NAME}
+        - GROUP_NAME=${GROUP_NAME}
+        - UID=${UID}
+        - GID=${GID}
+    environment:
+      - DISPLAY=${DISPLAY}
+      - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
+      #- PULSE_SERVER=unix:/tmp/pulseaudio.socket
+      #- PULSE_COOKIE=/tmp/pulseaudio.cookie
+    volumes:
+       - /tmp/.X11-unix:/tmp/.X11-unix
+       - $HOME/.Xauthority/:/root/.Xauthority
+       - /dev:/dev
+    devices:
+       - /dev:/dev
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ipc: host
+    network_mode: host
+    tty: true
+    stdin_open: true
+    user: "${UID}:${GID}"
+    command: /bin/bash -c "nvidia-smi"
